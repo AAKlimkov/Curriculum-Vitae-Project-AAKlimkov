@@ -1,72 +1,63 @@
-import { useState } from "react";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import LoginForm from "./LoginForm";
-import "./App.css";
+
+// import LoginForm from "./LoginForm";
 import languages from "./languageges";
-import MaterialUIDemo from "./Material";
-import { useQuery, gql } from "@apollo/client";
+// import MaterialUIDemo from "./Material";
+import { gql, useLazyQuery } from "@apollo/client";
+import type { AuthInput, AuthResult } from "cv-graphql";
 
 i18n.use(initReactI18next).init(languages);
 
-const GET_LOCATIONS = gql`
-  query GetLocations {
-    locations {
-      id
-      name
-      description
-      photo
+const LOGIN = gql`
+  query Login($auth: AuthInput!) {
+    login(auth: $auth) {
+      user {
+        id
+        email
+      }
+      access_token
     }
   }
 `;
 
-function DisplayLocations() {
-  const { loading, error, data } = useQuery(GET_LOCATIONS);
+export type LoginArgs = {
+  auth: AuthInput;
+};
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
+export type LoginResult = {
+  login: AuthResult;
+};
+// const useLogin = () => {
+//   return useLazyQuery<LoginResult, LoginArgs>(LOGIN);
+// };
 
-  return data.locations.map(({ id, name, description, photo }) => (
-    <div key={id}>
-      <h3>{name}</h3>
-      <img width="400" height="250" alt="location-reference" src={`${photo}`} />
-      <br />
-      <b>About this location:</b>
-      <p>{description}</p>
-      <br />
-    </div>
-  ));
-}
 function App() {
-  const [count, setCount] = useState(0);
+  const [getUser, { loading, error, data }] = useLazyQuery(LOGIN, {
+    variables: {
+      auth: {
+        email: "aaklimkov@gmail.com",
+        password: "qweasd",
+      },
+    },
+  });
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <LoginForm />
-      <MaterialUIDemo />
-      <DisplayLocations />
+      {/* <LoginForm />
+      <MaterialUIDemo /> */}
+      <button
+        onClick={async () => {
+          getUser({
+            onCompleted: (user) => console.log(user),
+          });
+        }}
+      >
+        Click me!
+      </button>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error.message}</p>}
+      {data && <p>Login Successful!</p>}
     </>
   );
 }
