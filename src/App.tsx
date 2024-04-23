@@ -1,9 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-// import LoginForm from "./LoginForm";
 import languages from "./languageges";
-// import MaterialUIDemo from "./Material";
 import { gql, useLazyQuery } from "@apollo/client";
 import type { AuthInput, AuthResult } from "cv-graphql";
 
@@ -21,6 +19,15 @@ const LOGIN = gql`
   }
 `;
 
+const GET_LANGUAGES_QUERY = gql`
+  query GetLanguages {
+    languages {
+      id
+      created_at
+    }
+  }
+`;
+
 export type LoginArgs = {
   auth: AuthInput;
 };
@@ -28,11 +35,8 @@ export type LoginArgs = {
 export type LoginResult = {
   login: AuthResult;
 };
-// const useLogin = () => {
-//   return useLazyQuery<LoginResult, LoginArgs>(LOGIN);
-// };
 
-function App() {
+const App = () => {
   const [getUser, { loading, error, data }] = useLazyQuery(LOGIN, {
     variables: {
       auth: {
@@ -41,15 +45,15 @@ function App() {
       },
     },
   });
-
+  const [getLanguages] = useLazyQuery(GET_LANGUAGES_QUERY);
   return (
     <>
-      {/* <LoginForm />
-      <MaterialUIDemo /> */}
       <button
         onClick={async () => {
           getUser({
-            onCompleted: (user) => console.log(user),
+            onCompleted: (data) => {
+              localStorage.setItem("token", data.login.access_token);
+            },
           });
         }}
       >
@@ -58,8 +62,17 @@ function App() {
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
       {data && <p>Login Successful!</p>}
+      <button
+        onClick={() =>
+          getLanguages({
+            onCompleted: (data) => console.log(data),
+          })
+        }
+      >
+        Load Languages
+      </button>
     </>
   );
-}
+};
 
 export default App;
