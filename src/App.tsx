@@ -1,11 +1,14 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
 
-import languages from "./languageges";
-import { gql, useLazyQuery } from "@apollo/client";
-import type { AuthInput, AuthResult } from "cv-graphql";
+import languages from './languageges'
+import { ApolloProvider, gql, useLazyQuery } from '@apollo/client'
+import type { AuthInput, AuthResult } from 'cv-graphql'
+import { RouterProvider } from 'react-router-dom'
+import { client } from './apolo/apolo'
+import router from './router/router'
 
-i18n.use(initReactI18next).init(languages);
+i18n.use(initReactI18next).init(languages)
 
 const LOGIN = gql`
   query Login($auth: AuthInput!) {
@@ -17,7 +20,7 @@ const LOGIN = gql`
       access_token
     }
   }
-`;
+`
 
 const GET_LANGUAGES_QUERY = gql`
   query GetLanguages {
@@ -26,35 +29,35 @@ const GET_LANGUAGES_QUERY = gql`
       created_at
     }
   }
-`;
+`
 
 export type LoginArgs = {
-  auth: AuthInput;
-};
+  auth: AuthInput
+}
 
 export type LoginResult = {
-  login: AuthResult;
-};
+  login: AuthResult
+}
 
-const App = () => {
+export const App1 = () => {
   const [getUser, { loading, error, data }] = useLazyQuery(LOGIN, {
     variables: {
       auth: {
-        email: "aaklimkov@gmail.com",
-        password: "qweasd",
+        email: 'aaklimkov@gmail.com',
+        password: 'qweasd',
       },
     },
-  });
-  const [getLanguages] = useLazyQuery(GET_LANGUAGES_QUERY);
+  })
+  const [getLanguages] = useLazyQuery(GET_LANGUAGES_QUERY)
   return (
     <>
       <button
         onClick={async () => {
           getUser({
             onCompleted: (data) => {
-              localStorage.setItem("token", data.login.access_token);
+              localStorage.setItem('token', data.login.access_token)
             },
-          });
+          })
         }}
       >
         Click me!
@@ -72,7 +75,13 @@ const App = () => {
         Load Languages
       </button>
     </>
-  );
-};
+  )
+}
 
-export default App;
+export const App = () => {
+  return (
+    <ApolloProvider client={client}>
+      <RouterProvider router={router} />
+    </ApolloProvider>
+  )
+}

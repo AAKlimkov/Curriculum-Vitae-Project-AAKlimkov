@@ -19,7 +19,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["node"]
+    "types": ["node"],
+
+    //paths
+    "baseUrl": "./src/",
+    "paths": { "@components/*": ["components/*"], "@constants/*": ["constants/*"] }
   },
 
   "include": ["src"],
