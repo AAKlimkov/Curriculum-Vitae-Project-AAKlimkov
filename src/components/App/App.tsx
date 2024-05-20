@@ -1,12 +1,13 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
-import languages from './languageges'
+import languages from '../../languageges'
 import { ApolloProvider, gql, useLazyQuery } from '@apollo/client'
 import type { AuthInput, AuthResult } from 'cv-graphql'
 import { RouterProvider } from 'react-router-dom'
-import { client } from './apolo/apolo'
-import router from './router/router'
+import { client } from '../../apolo/apolo'
+import router from '../../router/router'
+import ThemeProvider from 'theme/themeProvider'
 
 i18n.use(initReactI18next).init(languages)
 
@@ -81,7 +82,9 @@ export const App1 = () => {
 export const App = () => {
   return (
     <ApolloProvider client={client}>
-      <RouterProvider router={router} />
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </ApolloProvider>
   )
 }
