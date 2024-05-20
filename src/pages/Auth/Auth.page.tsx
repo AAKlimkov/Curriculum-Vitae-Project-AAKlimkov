@@ -6,12 +6,11 @@ import { PageLoader } from 'components/PageLoader'
 import { routes } from 'constants/routes'
 import { LanguageSelect } from '@components/LanguageSelect'
 import LanguageIcon from '@mui/icons-material/Language'
+import { ThemeSwitcher } from '@components/ThemeSwither/ThemeSwitcher'
 
 const Auth = () => {
   const location = useLocation()
   const { t } = useTranslation()
-
-  console.log(t)
 
   return (
     <>
@@ -31,6 +30,7 @@ const Auth = () => {
           />
         </Tabs>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <ThemeSwitcher />
           <LanguageIcon color="primary" />
           <LanguageSelect />
         </Box>
